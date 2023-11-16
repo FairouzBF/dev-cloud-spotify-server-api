@@ -3,14 +3,12 @@ const mongoose = require('mongoose');
 const cors = require('cors');
 const bodyParser = require('body-parser');
 const errorHandler = require('./middleware/errorHandler');
-const songRouter = require('./routes/songs');
+const apiRouter = require('./routes');
 const app = express();
 require('dotenv').config();
 
 app.use(cors());
 app.use(bodyParser.json());
-app.use(errorHandler);
-app.use('/api/v1', songRouter);
 
 mongoose.set('strictQuery', false);
 mongoose
@@ -21,6 +19,10 @@ mongoose
     console.log(`Successfully connect to database`);
   })
   .catch(err => console.log(err));
+
+
+app.use("/api/v1", apiRouter);
+app.use(errorHandler);
 
 app.listen(process.env.PORT, function () {
   console.log('server launch my');
