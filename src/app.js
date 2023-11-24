@@ -25,5 +25,5 @@ app.use("/api/v1", apiRouter);
 app.use(errorHandler);
 
 app.listen(process.env.PORT, function () {
-  console.log('server launch my');
+  console.log('server launch my Spotify APP');
 });

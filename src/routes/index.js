@@ -1,11 +1,13 @@
 const express = require('express');
 const router = express.Router();
-const songsRouter = require('./songs.route');
-const genresRouter = require('./genres.route');
-const artistsRouter = require('./artists.route');
+const songsRouter = require('./song.route');
+const genresRouter = require('./genre.route');
+const artistsRouter = require('./artist.route');
+const albumsRouter = require('./album.route');
 
-router.use('/songs', songsRouter);
-router.use('/genres', genresRouter);
-router.use('/artists', artistsRouter);
+router.use('/song', songsRouter);
+router.use('/genre', genresRouter);
+router.use('/artist', artistsRouter);
+router.use('/album', albumsRouter);
 
 module.exports = router;

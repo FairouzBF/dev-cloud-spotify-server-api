@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const artistController = require('../controllers/artists.controller');
+const artistController = require('../controllers/artist.controller');
 
 router.get('/', artistController.getArtists);
 router.get('/:id', artistController.getArtistById);

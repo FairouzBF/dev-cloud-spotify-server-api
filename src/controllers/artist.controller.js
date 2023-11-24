@@ -1,4 +1,4 @@
-const Artist = require('../models/artists.model');
+const Artist = require('../models/artist.model');
 
 // GET: Récupérer tous les sons
 exports.getArtists = (req, res) => {
@@ -18,7 +18,6 @@ exports.getArtistById = (req, res) => {
 exports.addArtist = (req, res) => {
     const artist = new Artist({
         name: req.body.name,
-        // Ajoutez d'autres champs nécessaires
     });
     artist.save().then(
         () => res.json('Artist added!')

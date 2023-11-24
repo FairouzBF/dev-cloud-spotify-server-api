@@ -1,4 +1,4 @@
-const Genre = require('../models/genres.model');
+const Genre = require('../models/genre.model');
 
 // GET: Récupérer tous les sons
 exports.getGenres = (req, res) => {
