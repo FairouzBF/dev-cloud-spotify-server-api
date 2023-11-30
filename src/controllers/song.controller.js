@@ -1,6 +1,7 @@
 const fs = require('fs').promises;
 const Song = require('../models/song.model');
 const Artist = require('../models/artist.model');
+const Album = require('../models/album.model');
 const Genre = require('../models/genre.model');
 const upload = require('../middleware/multer');
 
@@ -9,26 +10,30 @@ exports.addSong = async (req, res, next) => {
         try {
             console.log('Received a request to add a song:', req.body);
             // Récupérez les données de la requête
-            const { title, artist, genre } = req.body;
+            const { title, artist, album } = req.body;
 
             // Vérifiez si l'artiste et le genre existent
             const existingArtist = await Artist.findOne({ name: artist });
-            const existingGenre = await Genre.findOne({ name: genre });
+            const existingAlbum = await Album.findOne({ title: album });
 
-            if (!existingArtist || !existingGenre) {
-                return res.status(404).json({ message: "L'artiste ou le genre n'existe pas." });
+            if (!existingArtist || !existingAlbum) {
+                console.log('artist', existingArtist, 'album',existingAlbum);
+                return res.status(404).json({ message: "L'artiste ou l'album n'existe pas." });
             }
 
             // Créez un nouvel objet Song avec les données fournies
             const newSong = new Song({
                 title,
                 artist: existingArtist._id, // Use the retrieved artist ID
-                genre: existingGenre._id,
+                album: existingAlbum._id,
                 audio: req.file.path
             });
 
             // Enregistrez la chanson dans la base de données
             const savedSong = await newSong.save();
+
+            existingAlbum.songs.push(savedSong._id);
+            await existingAlbum.save();
 
             res.status(201).json(savedSong);
         } catch (error) {

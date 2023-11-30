@@ -1,11 +1,13 @@
 const mongoose = require('mongoose');
 const Genre = require('./genre.model');
 const Artist = require('./artist.model');
+const Album = require('./album.model');
 
 const songSchema = new mongoose.Schema({
   title: { type: String, required: true },
-  artist: { type: mongoose.Schema.Types.ObjectId, ref: 'Artist', required: true },
-  genre: { type: mongoose.Schema.Types.ObjectId, ref: 'Genre', required: true },
+  artist: { type: mongoose.Schema.Types.ObjectId, ref: 'Artist', required: true, name: String },
+  // genre: { type: mongoose.Schema.Types.ObjectId, ref: 'Genre', required: true },
+  album: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Album', required: true, title: String }],
   audio: { type: String, required:  true },
 });
 

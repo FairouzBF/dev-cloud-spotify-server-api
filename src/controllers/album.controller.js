@@ -23,7 +23,9 @@ exports.addAlbum = async (req, res) => {
 
     // Enregistrez l'album dans la base de données
     const savedAlbum = await newAlbum.save();
-
+    existingArtist.albums.push(savedAlbum._id);
+    await existingArtist.save();
+    
     res.status(201).json(savedAlbum);
   } catch (error) {
     res.status(500).json({ message: 'Erreur lors de l\'ajout d\'un album.' });
