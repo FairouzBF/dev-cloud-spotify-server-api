@@ -25,10 +25,48 @@ exports.addAlbum = async (req, res) => {
     const savedAlbum = await newAlbum.save();
     existingArtist.albums.push(savedAlbum._id);
     await existingArtist.save();
-    
+
     res.status(201).json(savedAlbum);
   } catch (error) {
     res.status(500).json({ message: 'Erreur lors de l\'ajout d\'un album.' });
+  }
+};
+
+async function createAlbumFromFile(filePath) {
+  try {
+    const metadata = await mm.parseFile(filePath);
+    console.log('Metadata:', metadata);
+
+    let existingArtist = await Artist.findOne({ name: metadata.common.artist });
+
+    const album = new Album({
+      title: metadata.common.album,
+      artist: existingArtist._id || metadata.common.artist,
+      releaseDate: metadata.common.year,
+      songs: [],
+    });
+
+    await album.save();
+    console.log('Album created successfully:', album);
+    return album._id;
+  } catch (error) {
+    console.error(`Error creating album from folder ${filePath}:`, error.message);
+    throw error;
+  }
+}
+
+exports.addAlbumFromFile = async (req, res) => {
+  try {
+    console.log('Request body:', req.body);
+    const filePath = req.body.filePath;
+
+    console.log('Creating artist from folder:', filePath);
+    const artistId = await createAlbumFromFile(filePath);
+
+    return res.status(200).json({ message: 'Artist created from folder successfully', artistId });
+  } catch (error) {
+    console.error('Error creating artist from folder:', error.message);
+    return res.status(500).json({ error: 'Internal server error' });
   }
 };
 
