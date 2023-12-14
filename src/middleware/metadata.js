@@ -199,7 +199,7 @@ processFolder(folderPath);
   }
 } */
 
-/* async function readMetadataForAllSongs() {
+async function readMetadataForAllSongs() {
   try {
     // Read the contents of the directory
     const files = fs.readdirSync(folderPath);
@@ -211,7 +211,7 @@ processFolder(folderPath);
       try {
         // Read metadata for each file
         const metadata = await mm.parseFile(filePath);
-        console.log(`Metadata for ${file}:`, metadata);
+        console.log(`Metadata for ${file}:`, metadata.format.trackInfo[0]);
       } catch (error) {
         console.error(`Error reading metadata for ${file}:`, error.message);
       }
@@ -219,8 +219,8 @@ processFolder(folderPath);
   } catch (error) {
     console.error('Error reading directory:', error.message);
   }
-} */
+}
 
 // Appeler la fonction avec le chemin du dossier de l'album
 //processAlbumFolder(folderPath);
-//readMetadataForAllSongs();
+readMetadataForAllSongs();
