@@ -7,7 +7,6 @@ const authMiddleware = require('../middleware/authMiddleware');
 router.post('/login', userController.login);
 router.post('/logout', authMiddleware, userController.logout);
 router.post('/create-admin', userController.createAdminAccount);
-//route to test authMiddleware
 router.get('/protected', authMiddleware, (req, res) => {
     res.json({ message: 'This is a protected route', user: req.user });
 });

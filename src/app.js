@@ -7,7 +7,12 @@ const apiRouter = require('./routes');
 const app = express();
 require('dotenv').config();
 
-app.use(cors());
+const corsOptions = {
+  origin: 'http://localhost:3000', // Change this to your frontend domain
+  credentials: true,
+};
+
+app.use(cors(corsOptions));
 app.use(bodyParser.json());
 
 app.use(express.json());
@@ -29,7 +34,6 @@ mongoose
     console.log(`Successfully connect to database`);
   })
   .catch(err => console.log(err));
-
 
 app.use("/api/v1", apiRouter);
 app.use(errorHandler);
