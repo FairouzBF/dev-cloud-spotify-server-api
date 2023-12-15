@@ -1,10 +1,15 @@
+//user.route.js
 const express = require('express');
 const router = express.Router();
 const userController = require('../controllers/user.controller');
 const authMiddleware = require('../middleware/authMiddleware');
 
 router.post('/login', userController.login);
-// Temporary route for admin account creation
-router.post('/create-admin', authMiddleware, userController.createAdminAccount);
+router.post('/logout', authMiddleware, userController.logout);
+router.post('/create-admin', userController.createAdminAccount);
+//route to test authMiddleware
+router.get('/protected', authMiddleware, (req, res) => {
+    res.json({ message: 'This is a protected route', user: req.user });
+});
 
 module.exports = router;

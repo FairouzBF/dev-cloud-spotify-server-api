@@ -6,11 +6,8 @@ const authMiddleware = require('../middleware/authMiddleware');
 router.get('/', songController.getAllSongs);
 router.get('/filter', songController.filterSongs);
 router.get('/:id', songController.getSongById);
-router.post('/', songController.addSong);
-router.put('/:id', songController.editSong);
-router.delete('/:id', songController.deleteSong);
-router.get('/protected-route', authMiddleware, (req, res) => {
-    res.json({ message: 'This is a protected route', user: req.user });
-});
+router.post('/', authMiddleware, songController.addSong);
+router.put('/:id', authMiddleware, songController.editSong);
+router.delete('/:id', authMiddleware, songController.deleteSong);
 
 module.exports = router;
