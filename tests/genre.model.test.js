@@ -1,4 +1,3 @@
-const mongoose = require('mongoose');
 const Genre = require('../src/models/genre.model');
 
 // Mocking the Genre model functions

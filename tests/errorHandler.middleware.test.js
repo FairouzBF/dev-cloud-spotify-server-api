@@ -1,4 +1,4 @@
-const errorHandler = require('../../src/middleware/errorHandler');
+const errorHandler = require('../src/middleware/errorHandler');
 
 describe('errorHandler', () => {
   it('should handle an error with status code and message', () => {
@@ -17,7 +17,7 @@ describe('errorHandler', () => {
       success: false,
       status: 404,
       message: 'Sample error',
-      stack: 'development', // Assuming development environment
+      stack: 'test', // Assuming development environment
     });
   });
 
@@ -36,7 +36,7 @@ describe('errorHandler', () => {
       success: false,
       status: 500,
       message: 'Sample error without status code',
-      stack: 'development', // Assuming development environment
+      stack: 'test', // Assuming development environment
     });
   });
 });
