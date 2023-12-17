@@ -42,7 +42,7 @@ exports.login = async (req, res) => {
     // Generate and send JWT token
     const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, { expiresIn: '1h' });
     console.log('Setting cookie...', token);
-    res.cookie('authToken', token, { httpOnly: true, maxAge: 900000, secure: true, sameSite: 'None' });
+    res.cookie('authToken', token, { maxAge: 900000, secure: true, sameSite: 'None' });
     res.status(200).json({message: 'Admin login successful', token });
   } catch (error) {
     console.error('Error during admin login:', error);
