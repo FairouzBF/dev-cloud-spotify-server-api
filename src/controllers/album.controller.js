@@ -1,5 +1,6 @@
 const Album = require('../models/album.model');
 const Artist = require('../models/artist.model');
+const mm = require('music-metadata');
 
 // CREATE (ajouter un album)
 exports.addAlbum = async (req, res) => {
@@ -37,20 +38,28 @@ async function createAlbumFromFile(filePath) {
     const metadata = await mm.parseFile(filePath);
     console.log('Metadata:', metadata);
 
-    let existingArtist = await Artist.findOne({ name: metadata.common.artist });
+    const existingAlbum = await Artist.findOne({ name: metadata.common.album });
+
+    if (existingAlbum) {
+        console.error('Album already exists:', existingAlbum);
+        return existingAlbum._id;
+    }
+
+    const existingArtist = await Artist.findOne({ name: metadata.common.artist });
 
     const album = new Album({
       title: metadata.common.album,
       artist: existingArtist._id || metadata.common.artist,
       releaseDate: metadata.common.year,
       songs: [],
+      albumCover: metadata.common.picture[0].data.toString('base64'),
     });
 
     await album.save();
     console.log('Album created successfully:', album);
     return album._id;
   } catch (error) {
-    console.error(`Error creating album from folder ${filePath}:`, error.message);
+    console.error(`Error creating album from file ${filePath}:`, error.message);
     throw error;
   }
 }
@@ -60,12 +69,12 @@ exports.addAlbumFromFile = async (req, res) => {
     console.log('Request body:', req.body);
     const filePath = req.body.filePath;
 
-    console.log('Creating artist from folder:', filePath);
+    console.log('Creating album from file:', filePath);
     const artistId = await createAlbumFromFile(filePath);
 
-    return res.status(200).json({ message: 'Artist created from folder successfully', artistId });
+    return res.status(200).json({ message: 'Artist created from file successfully', artistId });
   } catch (error) {
-    console.error('Error creating artist from folder:', error.message);
+    console.error('Error creating album from file:', error.message);
     return res.status(500).json({ error: 'Internal server error' });
   }
 };
@@ -95,12 +104,12 @@ exports.getAlbumById = async (req, res) => {
 // UPDATE (modifier un album)
 exports.editAlbum = async (req, res) => {
   try {
-    const { title, artist, releaseDate, songs } = req.body;
+    const { title, artist, releaseDate, songs, albumCover } = req.body;
 
     // Mettez à jour l'album dans la base de données
     const updatedAlbum = await Album.findByIdAndUpdate(
       req.params.id,
-      { title, artist, releaseDate, songs },
+      { title, artist, releaseDate, songs, albumCover },
       { new: true }
     );
 
@@ -120,5 +129,30 @@ exports.deleteAlbum = async (req, res) => {
   } catch (error) {
     console.error('Erreur lors de la suppression d\'un album :', error);
     res.status(500).json({ message: 'Erreur lors de la suppression d\'un album.' });
+  }
+};
+
+exports.getAlbumCover = async (req, res) => {
+  try {
+    console.log('GET /api/albums/cover called with albumId:', req.params.id);
+    const albumId = req.params.id;
+
+    // Find the album by ID
+    const album = await Album.findById(albumId);
+
+    if (!album) {
+      return res.status(404).json({ error: 'Album not found' });
+    }
+
+    // Check if the album has a cover
+    if (!album.albumCover) {
+      return res.status(404).json({ error: 'Album cover not found' });
+    }
+
+    // Send the album cover as a data URI
+    res.status(200).send(`data:image/png;base64,${album.albumCover}`);
+  } catch (error) {
+    console.error('Error retrieving album cover:', error);
+    res.status(500).json({ error: 'Internal server error' });
   }
 };

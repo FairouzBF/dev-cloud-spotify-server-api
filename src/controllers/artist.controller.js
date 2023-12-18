@@ -31,6 +31,13 @@ async function createArtistFromFile(filePath) {
         const metadata = await mm.parseFile(filePath);
         console.log('Metadata:', metadata);
 
+        const existingArtist = await Artist.findOne({ name: metadata.common.artist });
+
+        if (existingArtist) {
+            console.error('Artist already exists:', existingArtist);
+            return existingArtist._id;
+        }
+
         const artist = new Artist({
             name: metadata.common.artist,
             albums: [],
@@ -55,6 +62,10 @@ exports.addArtistFromFile = async (req, res) => {
         console.log('Creating artist from folder:', filePath);
         const artistId = await createArtistFromFile(filePath);
 
+        if (artistId) {
+            return res.status(200).json({ message: 'Artist already exists', artistId });
+        }
+        
         return res.status(200).json({ message: 'Artist created from folder successfully', artistId });
     } catch (error) {
         console.error('Error creating artist from folder:', error.message);

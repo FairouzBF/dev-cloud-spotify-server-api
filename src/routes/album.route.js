@@ -3,6 +3,7 @@ const router = express.Router();
 const albumController = require('../controllers/album.controller');
 const authMiddleware = require('../middleware/authMiddleware');
 
+router.get('/cover/:id', albumController.getAlbumCover);
 router.get('/', albumController.getAllAlbums);
 router.get('/:id', albumController.getAlbumById);
 router.post('/', authMiddleware, albumController.addAlbum);
