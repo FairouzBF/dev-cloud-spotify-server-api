@@ -1,6 +1,7 @@
 const Album = require('../models/album.model');
 const Artist = require('../models/artist.model');
-const mm = require('music-metadata');
+//const mm = require('music-metadata');
+const { createAlbumFromFile } = require('../utils/fileCreator');
 
 // CREATE (ajouter un album)
 exports.addAlbum = async (req, res) => {
@@ -33,62 +34,13 @@ exports.addAlbum = async (req, res) => {
   }
 };
 
-async function createAlbumFromFile(filePath) {
-  try {
-    const metadata = await mm.parseFile(filePath);
-    console.log('Reading metadata:', metadata);
-
-    const existingAlbum = await Album.findOne({ name: metadata.common.album });
-
-    if (existingAlbum) {
-        console.error('Album already exists:', existingAlbum);
-        return existingAlbum._id;
-    }
-
-    console.log(`Album doesn't exist in out DB...`);
-    console.log('Checking for artist...');
-    let existingArtist = await Artist.findOne({ name: metadata.common.artist });
-
-    if (!existingArtist) {
-      console.log(`Artist ${metadata.common.artist} does not exist, adding them to the DB...`);
-      const newArtist = new Artist({
-        name: metadata.common.artist,
-      });
-
-      existingArtist = await newArtist.save();
-      console.log('Artist created successfully!');
-    }
-
-    console.log('Adding the album to the DB...');
-    const album = new Album({
-      title: metadata.common.album,
-      artist: existingArtist._id,
-      releaseDate: metadata.common.year,
-      songs: [],
-      albumCover: metadata.common.picture[0].data.toString('base64'),
-    });
-
-    await album.save();
-    console.log('Album created successfully!');
-
-    existingArtist.albums.push(album._id);
-    await existingArtist.save();
-    console.log('Album linked to artist successfully!');
-
-    return album._id;
-  } catch (error) {
-    console.error(`Error creating album from file ${filePath}:`, error.message);
-    throw error;
-  }
-}
-
 exports.addAlbumFromFile = async (req, res) => {
   try {
     console.log('Request body:', req.body);
     const filePath = req.body.filePath;
-    const artistId = await createAlbumFromFile(filePath);
+    const albumId = await createAlbumFromFile(filePath);
 
-    return res.status(200).json({ message: 'Artist created from file successfully', artistId });
+    return res.status(200).json({ message: 'Artist created from file successfully', albumId });
   } catch (error) {
     console.error('Error creating album from file:', error.message);
     return res.status(500).json({ error: 'Internal server error' });
