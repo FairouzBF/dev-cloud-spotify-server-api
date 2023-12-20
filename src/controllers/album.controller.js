@@ -1,7 +1,19 @@
 const Album = require('../models/album.model');
 const Artist = require('../models/artist.model');
-//const mm = require('music-metadata');
 const { createAlbumFromFile } = require('../utils/fileCreator');
+
+exports.addAlbumFromFile = async (req, res) => {
+  try {
+    console.log('Request body:', req.body);
+    const file = req.body;
+    const albumId = await createAlbumFromFile(file);
+
+    return res.status(200).json({ message: 'Artist created from file successfully', albumId });
+  } catch (error) {
+    console.error('Error creating album from file:', error.message);
+    return res.status(500).json({ error: 'Internal server error' });
+  }
+};
 
 // CREATE (ajouter un album)
 exports.addAlbum = async (req, res) => {
@@ -31,19 +43,6 @@ exports.addAlbum = async (req, res) => {
     res.status(201).json(savedAlbum);
   } catch (error) {
     res.status(500).json({ message: 'Erreur lors de l\'ajout d\'un album.' });
-  }
-};
-
-exports.addAlbumFromFile = async (req, res) => {
-  try {
-    console.log('Request body:', req.body);
-    const filePath = req.body.filePath;
-    const albumId = await createAlbumFromFile(filePath);
-
-    return res.status(200).json({ message: 'Artist created from file successfully', albumId });
-  } catch (error) {
-    console.error('Error creating album from file:', error.message);
-    return res.status(500).json({ error: 'Internal server error' });
   }
 };
 

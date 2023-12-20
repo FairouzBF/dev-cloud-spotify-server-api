@@ -1,5 +1,5 @@
 const Artist = require('../models/artist.model');
-const mm = require('music-metadata');
+const { createArtistFromFile } = require('../utils/fileCreator');
 
 // GET: Récupérer tous les sons
 exports.getArtists = (req, res) => {
@@ -24,34 +24,6 @@ exports.addArtist = (req, res) => {
         () => res.json('Artist added!')
     ).catch((err) => res.status(400).json('Error: ' + err));
 };
-
-async function createArtistFromFile(filePath) {
-    try {
-        const metadata = await mm.parseFile(filePath);
-        console.log('Metadata:', metadata);
-
-        const existingArtist = await Artist.findOne({ name: metadata.common.artist });
-
-        if (existingArtist) {
-            console.error('Artist already exists:', existingArtist);
-            return existingArtist._id;
-        }
-
-        const artist = new Artist({
-            name: metadata.common.artist,
-            albums: [],
-            songs: [],
-        });
-
-        await artist.save();
-        console.log('Artist created successfully from folder:', artist);
-
-        return artist._id;
-    } catch (error) {
-        console.error(`Error creating artist from folder ${filePath}:`, error.message);
-        throw error;
-    }
-}
 
 exports.addArtistFromFile = async (req, res) => {
     try {
