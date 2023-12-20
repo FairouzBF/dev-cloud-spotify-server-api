@@ -8,6 +8,7 @@ const songSchema = new mongoose.Schema({
   artist: { type: mongoose.Schema.Types.ObjectId, ref: 'Artist', required: true, name: String },
   // genre: { type: mongoose.Schema.Types.ObjectId, ref: 'Genre', required: true },
   album: { type: mongoose.Schema.Types.ObjectId, ref: 'Album', required: true, title: String },
+  albumCover: { type: String },
   audio: { type: String, required:  true },
 });
 

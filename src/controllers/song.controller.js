@@ -71,6 +71,7 @@ exports.filterSongs = async (req, res) => {
         res.status(500).json({ message: 'Error: ' + error.message });
     }
 };
+
 // GET: Récupérer un son par son ID
 exports.getSongById = (req, res) => {
     Song.findById(req.params.id).then(
