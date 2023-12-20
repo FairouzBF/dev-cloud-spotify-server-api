@@ -63,6 +63,7 @@ async function createAlbumFromFile(filePath) {
     const album = new Album({
       title: metadata.common.album,
       artist: existingArtist._id,
+      artistName: metadata.common.artist,
       releaseDate: metadata.common.year,
       songs: [],
       albumCover: metadata.common.picture[0].data.toString('base64'),
@@ -86,8 +87,14 @@ async function importSongFromFile(filePath) {
     try {
       const metadata = await mm.parseFile(filePath);
       console.log('Reading metadata...', metadata.common);
-  
+
       const {title, artist, album} = metadata.common;
+      const existingSong = await Song.findOne({title: title});
+
+      if (existingSong) {
+        console.error('Song already exists:', existingSong);
+        return { message: 'Song already exists', existingSongId: existingSong._id };
+      }
   
       console.log('Checking for album...');
       let existingAlbum = await Album.findOne({name: album});
@@ -103,9 +110,12 @@ async function importSongFromFile(filePath) {
       const newSong = new Song({
         title,
         artist: existingArtist._id,
+        artistName: artist,
         album: existingAlbum._id,
+        albumTitle: album,
         albumCover: metadata.common.picture[0].data.toString('base64'),
         audio: filePath,
+        duration: metadata.format.duration,
       });
   
       const savedSong = await newSong.save();

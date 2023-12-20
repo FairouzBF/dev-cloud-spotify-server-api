@@ -13,8 +13,12 @@ exports.addSong = async (req, res, next) => {
       console.log('Received a request to add a song:', req.body);
 
       // Use the importSongFromFile function to handle the song import
-      await importSongFromFile(req.file.path);
+      const importResult = await importSongFromFile(req.file.path);
 
+      if (importResult.existingSongId) {
+        return res.status(201).json({ message: 'Song already exists.', existingSongId: importResult.existingSongId });
+      }
+      
       res.status(201).json({message: 'Song added successfully!'});
     } catch (error) {
       console.error('Error while adding a song:', error);
