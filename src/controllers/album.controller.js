@@ -1,5 +1,7 @@
 const Album = require('../models/album.model');
 const Artist = require('../models/artist.model');
+const Song = require('../models/song.model');
+
 const { createAlbumFromFile } = require('../utils/fileCreator');
 
 exports.addAlbumFromFile = async (req, res) => {
@@ -90,8 +92,24 @@ exports.editAlbum = async (req, res) => {
 // DELETE (supprimer un album)
 exports.deleteAlbum = async (req, res) => {
   try {
-    // Supprimez l'album de la base de données
+    // Find and store the album to get the linked songs
+    const album = await Album.findById(req.params.id);
+
+    if (!album) {
+      return res.status(404).json({ message: 'Album not found.' });
+    }
+
+    // Store the linked songs
+    const linkedSongs = album.songs;
+
+    // Delete the album from the database
     const deletedAlbum = await Album.findByIdAndDelete(req.params.id);
+
+    // Delete the linked songs
+    if (linkedSongs && linkedSongs.length > 0) {
+      await Song.deleteMany({ _id: { $in: linkedSongs } });
+    }
+
     res.json(deletedAlbum);
   } catch (error) {
     console.error('Erreur lors de la suppression d\'un album :', error);
