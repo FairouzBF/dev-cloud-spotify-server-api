@@ -1,6 +1,25 @@
 const Artist = require('../models/artist.model');
 const { createArtistFromFile } = require('../utils/fileCreator');
 
+exports.addArtistFromFile = async (req, res) => {
+    try {
+        console.log('Request body:', req.body);
+        const filePath = req.body.filePath;
+
+        console.log('Creating artist from folder:', filePath);
+        const artistId = await createArtistFromFile(filePath);
+
+        if (artistId) {
+            return res.status(200).json({ message: 'Artist already exists', artistId });
+        }
+        
+        return res.status(200).json({ message: 'Artist created from folder successfully', artistId });
+    } catch (error) {
+        console.error('Error creating artist from folder:', error.message);
+        return res.status(500).json({ error: 'Internal server error' });
+    }
+};
+
 // GET: Récupérer tous les sons
 exports.getArtists = (req, res) => {
     Artist.find().then(
@@ -23,25 +42,6 @@ exports.addArtist = (req, res) => {
     artist.save().then(
         () => res.json('Artist added!')
     ).catch((err) => res.status(400).json('Error: ' + err));
-};
-
-exports.addArtistFromFile = async (req, res) => {
-    try {
-        console.log('Request body:', req.body);
-        const filePath = req.body.filePath;
-
-        console.log('Creating artist from folder:', filePath);
-        const artistId = await createArtistFromFile(filePath);
-
-        if (artistId) {
-            return res.status(200).json({ message: 'Artist already exists', artistId });
-        }
-        
-        return res.status(200).json({ message: 'Artist created from folder successfully', artistId });
-    } catch (error) {
-        console.error('Error creating artist from folder:', error.message);
-        return res.status(500).json({ error: 'Internal server error' });
-    }
 };
 
 // PUT: Mettre à jour un son par son ID
