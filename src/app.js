@@ -44,6 +44,10 @@ mongoose
 app.use('/covers', express.static('covers'));
 app.use('/uploads', express.static('uploads'));
 
+app.get('/', (req, res) => {
+  res.send('Hello, this is the homepage!');
+});
+
 app.use("/api/v1", apiRouter);
 app.use(errorHandler);
 
