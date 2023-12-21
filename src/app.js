@@ -7,6 +7,12 @@ const apiRouter = require('./routes');
 const app = express();
 require('dotenv').config();
 
+// Log environment variables
+console.log('MONGODB_USER:', process.env.MONGODB_USER);
+console.log('MONGODB_PASSWORD:', process.env.MONGODB_PASSWORD);
+console.log('MONGODB_CLUSTER:', process.env.MONGODB_CLUSTER);
+console.log('PORT:', process.env.PORT);
+
 const corsOptions = {
   origin: 'http://localhost:3000', // Change this to your frontend domain
   credentials: true,
@@ -36,7 +42,7 @@ mongoose
   .catch(err => console.log(err));
 
 app.use('/covers', express.static('covers'));
-app.use('/songs', express.static('songs'));
+app.use('/uploads', express.static('uploads'));
 
 app.use("/api/v1", apiRouter);
 app.use(errorHandler);
