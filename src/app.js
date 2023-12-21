@@ -41,15 +41,11 @@ mongoose
   })
   .catch(err => console.log(err));
 
-/* app.use('/covers', express.static('covers'));
+app.use('/covers', express.static('covers'));
 app.use('/uploads', express.static('uploads'));
- */
-app.get('/', (req, res) => {
-  res.send('Hello, this is the homepage!');
-});
-/* 
-app.use("/api/v1", apiRouter);
-app.use(errorHandler); */
+
+app.use("/", apiRouter);
+app.use(errorHandler);
 
 app.listen(process.env.PORT, function () {
   console.log('server launch my Spotify APP on port', process.env.PORT);
