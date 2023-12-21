@@ -7,11 +7,13 @@ const path = require('path');
 
 async function saveImage(picture) {
   const extension = picture.format.split('/')[1];
-  const imagePath = path.join(process.cwd(), 'covers', `${Date.now()}.${extension}`);
-
+  const fileName = `${Date.now()}.${extension}`;
+  const relativePath = path.join('covers', fileName);
+  const imagePath = path.join(process.cwd(),  relativePath);
   await fs.writeFile(imagePath, picture.data);
+  console.log('Cover saved successfully:', relativePath);
 
-  return imagePath;
+  return relativePath;
 }
 
 async function createArtistFromFile(file) {
@@ -73,13 +75,14 @@ async function createAlbumFromFile(filePath) {
 
     console.log('Adding the album to the DB...');
     const albumCoverPath = await saveImage(metadata.common.picture[0]);
+    const urlFriendlyAlbumCoverPath = albumCoverPath.replace(/\\/g, '/');
     const album = new Album({
       title: metadata.common.album,
       artist: existingArtist._id,
       artistName: metadata.common.artist,
       releaseDate: metadata.common.year,
       songs: [],
-      albumCover: albumCoverPath,
+      albumCover: urlFriendlyAlbumCoverPath,
     });
 
     await album.save();

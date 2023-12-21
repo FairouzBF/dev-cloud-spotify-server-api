@@ -35,6 +35,9 @@ mongoose
   })
   .catch(err => console.log(err));
 
+app.use('/covers', express.static('covers'));
+app.use('/songs', express.static('songs'));
+
 app.use("/api/v1", apiRouter);
 app.use(errorHandler);
 

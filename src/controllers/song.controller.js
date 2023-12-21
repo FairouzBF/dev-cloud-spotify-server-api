@@ -25,6 +25,35 @@ exports.addSong = async (req, res, next) => {
   });
 };
 
+exports.getSongFile = async (req, res) => {
+  try {
+    const song = await Song.findById(req.params.id);
+    console.log('Sending file:', song.audio);
+    res.sendFile(song.audio);
+  } catch (error) {
+    res.status(500).json({message: 'Error: ' + error.message});
+  }
+};
+
+exports.getSongCover = async (req, res) => {
+  try {
+    const song = await Song.findById(req.params.id);
+    console.log('Sending file:', song.albumCover);
+    res.sendFile(song.albumCover, { root: __dirname });
+  } catch (error) {
+    res.status(500).json({message: 'Error: ' + error.message});
+  }
+};
+
+exports.getSongCoverPath = async (req, res) => {
+  try {
+    const song = await Song.findById(req.params.id);
+    res.json({ path: song.albumCover });
+  } catch (error) {
+    res.status(500).json({ message: 'Error: ' + error.message });
+  }
+};
+
 // GET: Récupérer tous les sons
 exports.getAllSongs = (req, res) => {
   Song.find()
