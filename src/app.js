@@ -29,8 +29,6 @@ mongoose
   .connect(
     `mongodb+srv://${process.env.MONGODB_USER}:${process.env.MONGODB_PASSWORD}${process.env.MONGODB_CLUSTER}.mongodb.net/?retryWrites=true&w=majority`,
     {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
       serverSelectionTimeoutMS: 50000,
       connectTimeoutMS: 30000, // 30 seconds
       socketTimeoutMS: 45000,  // 45 seconds
