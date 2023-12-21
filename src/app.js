@@ -54,3 +54,7 @@ app.use(errorHandler);
 app.listen(process.env.PORT, function () {
   console.log('server launch my Spotify APP on port', process.env.PORT);
 });
+
+app.get('/test', (req, res) => {
+  res.send('Hello, this is the homepage!');
+});
