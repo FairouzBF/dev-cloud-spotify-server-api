@@ -2,6 +2,17 @@ const Album = require('../models/album.model');
 const Artist = require('../models/artist.model');
 const Song = require('../models/song.model');
 const mm = require('music-metadata');
+const fs = require('fs').promises;
+const path = require('path');
+
+async function saveImage(picture) {
+  const extension = picture.format.split('/')[1];
+  const imagePath = path.join(process.cwd(), 'covers', `${Date.now()}.${extension}`);
+
+  await fs.writeFile(imagePath, picture.data);
+
+  return imagePath;
+}
 
 async function createArtistFromFile(file) {
   try {
@@ -34,7 +45,7 @@ async function createArtistFromFile(file) {
 async function createAlbumFromFile(filePath) {
   try {
     const metadata = await mm.parseFile(filePath);
-    const existingAlbum = await Album.findOne({name: metadata.common.album});
+    const existingAlbum = await Album.findOne({title: metadata.common.album});
 
     if (existingAlbum) {
       console.error('Album already exists:', existingAlbum);
@@ -44,6 +55,7 @@ async function createAlbumFromFile(filePath) {
     console.log(
       `Album ${metadata.common.album} does not exist, adding it to the DB...`,
     );
+    
     console.log('Checking for artist...');
     let existingArtist = await Artist.findOne({name: metadata.common.artist});
 
@@ -60,13 +72,14 @@ async function createAlbumFromFile(filePath) {
     }
 
     console.log('Adding the album to the DB...');
+    const albumCoverPath = await saveImage(metadata.common.picture[0]);
     const album = new Album({
       title: metadata.common.album,
       artist: existingArtist._id,
       artistName: metadata.common.artist,
       releaseDate: metadata.common.year,
       songs: [],
-      albumCover: metadata.common.picture[0].data.toString('base64'),
+      albumCover: albumCoverPath,
     });
 
     await album.save();
@@ -105,15 +118,20 @@ async function importSongFromFile(filePath) {
       }
   
       // If the artist didn't exist before this, it's already been created with the createAlbumFromFile function
-      let existingArtist = await Artist.findOne({name: artist});
-  
+      let existingArtist = await Artist.findOne({artistName: artist});
+
+      if (!existingArtist) {
+        const artistId = await createArtistFromFile(filePath);
+        existingArtist = await Artist.findById(artistId);
+      }
+ 
       const newSong = new Song({
         title,
         artist: existingArtist._id,
         artistName: artist,
         album: existingAlbum._id,
         albumTitle: album,
-        albumCover: metadata.common.picture[0].data.toString('base64'),
+        albumCover: existingAlbum.albumCover,
         audio: filePath,
         duration: metadata.format.duration,
       });

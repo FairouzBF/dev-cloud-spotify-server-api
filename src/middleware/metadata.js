@@ -146,59 +146,6 @@ async function processFolder(folderPath) {
 
 processFolder(folderPath);
 
-/* async function processAlbumFolder(albumFolderPath) {
-  try {
-    // Lire le contenu du dossier de l'album
-    const files = fs.readdirSync(albumFolderPath);
-
-    if (files.length === 0) {
-      console.error('Album folder is empty.');
-      return;
-    }
-
-    const representativeTrackPath = path.join(albumFolderPath, files[0]);
-    const representativeMetadata = await readMetadata(representativeTrackPath);
-
-    // Initialiser les informations de l'album
-    const albumInfo = {
-      title: representativeMetadata.common.album || path.basename(albumFolderPath),
-      artist: representativeMetadata.common.albumartist || representativeMetadata.common.artist,
-      releaseDate: representativeMetadata.common.year ? new Date(representativeMetadata.common.year, 0) : new Date(),
-      songs: [],
-    };
-
-    // Loop à travers chaque fichier
-    for (const file of files) {
-      const filePath = path.join(albumFolderPath, file);
-
-      try {
-        // Lire les métadonnées de la chanson
-        const metadata = await readMetadata(filePath);
-
-        // Ajouter les informations de la chanson à l'album
-        albumInfo.songs.push({
-          title: metadata.common.title || path.basename(file, path.extname(file)),
-          audio: file,  // Vous pouvez utiliser le nom du fichier comme chemin audio
-          genre: metadata.common.genre,
-        });
-      } catch (error) {
-        // Gérer les erreurs de lecture des métadonnées
-        console.error(`Error processing file ${file}:`, error.message);
-      }
-    }
-
-    // Créer l'objet Album MongoDB
-    const album = new Album(albumInfo);
-
-    // Enregistrer l'album dans la base de données
-    //await album.save();
-
-    console.log('Album processed successfully:', album);
-  } catch (error) {
-    console.error('Error processing album folder:', error.message);
-  }
-} */
-
 async function readMetadataForAllSongs() {
   try {
     // Read the contents of the directory
