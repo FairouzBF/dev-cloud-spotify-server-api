@@ -1,19 +1,52 @@
-const express = require('express')
+const express = require('express');
+const mongoose = require('mongoose');
+const cors = require('cors');
+const bodyParser = require('body-parser');
+const errorHandler = require('./middleware/errorHandler');
+const apiRouter = require('./routes');
+const app = express();
+require('dotenv').config();
 
-const app = express()
-const PORT = 4000
+// Log environment variables
+console.log('MONGODB_USER:', process.env.MONGODB_USER);
+console.log('MONGODB_PASSWORD:', process.env.MONGODB_PASSWORD);
+console.log('MONGODB_CLUSTER:', process.env.MONGODB_CLUSTER);
+console.log('PORT:', process.env.PORT);
 
-app.listen(PORT, () => {
-  console.log(`API listening on PORT ${PORT} `)
-})
+const corsOptions = {
+  origin: 'http://localhost:3000', // Change this to your frontend domain
+  credentials: true,
+};
 
-app.get('/', (req, res) => {
-  res.send('Hey this is my API running 🥳')
-})
+app.use(cors(corsOptions));
+app.use(bodyParser.json());
 
-app.get('/about', (req, res) => {
-  res.send('This is my about route..... ')
-})
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
-// Export the Express API
-module.exports = app
+mongoose.set('strictQuery', false);
+mongoose
+  .connect(
+    `mongodb+srv://${process.env.MONGODB_USER}:${process.env.MONGODB_PASSWORD}${process.env.MONGODB_CLUSTER}.mongodb.net/?retryWrites=true&w=majority`,
+    {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+      serverSelectionTimeoutMS: 50000,
+      connectTimeoutMS: 30000, // 30 seconds
+      socketTimeoutMS: 45000,  // 45 seconds
+    }
+  )
+  .then(() => {
+    console.log(`Successfully connect to database`);
+  })
+  .catch(err => console.log(err));
+
+app.use('/covers', express.static('covers'));
+app.use('/uploads', express.static('uploads'));
+
+app.use("/", apiRouter);
+app.use(errorHandler);
+
+app.listen(process.env.PORT, function () {
+  console.log('server launch my Spotify APP on port', process.env.PORT);
+});
