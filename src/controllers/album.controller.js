@@ -135,7 +135,7 @@ exports.getAlbumCover = async (req, res) => {
     }
 
     // Send the album cover as a data URI
-    res.status(200).send(`data:image/png;base64,${album.albumCover}`);
+    res.status(200).send({albumCover: album.albumCover});
   } catch (error) {
     console.error('Error retrieving album cover:', error);
     res.status(500).json({ error: 'Internal server error' });
